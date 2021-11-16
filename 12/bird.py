@@ -5,7 +5,6 @@ import game_framework
 
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30cm
 
-
 TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
@@ -23,7 +22,7 @@ class Bird:
         self.size = random.randint(50,100)
         time_per_action = 0.1 * self.velocity
         self.action_per_timer = 1.0 / time_per_action
-
+        # 방향/위치/속도/크기 랜덤
 
     def draw(self):
         self.image.clip_draw(100*int(self.frame), 0, 100, 100, self.x, self.y,self.size,self.size)
@@ -33,9 +32,11 @@ class Bird:
         fly_speed_MPS = (fly_speed_MPM / 60.0)  # M/min -> M/60sec
         fly_speed_PPS = (fly_speed_MPS * PIXEL_PER_METER)  # M/sec -> Pixel/sec
 
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time * (self.velocity/10.0)) % 14
 
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time * (self.velocity/10.0)) % 14
+        # 다음 프레임 : 현재 프레임 + frame/time * frame_time * 현재 속도/10(날개짓 속도)
         self.x += self.dir * self.velocity * fly_speed_PPS * game_framework.frame_time
+        # 다음 위치 : 현재 방향(좌:-1/우:1) * 현재 속도 * frame/time * time
         half_size = self.size/2
-        self.x = clamp( half_size, self.x, 1600 -  half_size)
+        self.x = clamp(half_size, self.x, 1600 -  half_size)
         if self.x == half_size or self.x== 1600- half_size : self.dir = -self.dir
