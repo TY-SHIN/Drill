@@ -2,6 +2,7 @@ import game_framework
 from pico2d import *
 from ball import Ball
 
+import main_state
 import game_world
 
 # Boy Run Speed
@@ -55,6 +56,9 @@ class IdleState:
         boy.timer -= 1
         if boy.timer == 0:
             boy.add_event(SLEEP_TIMER)
+        if boy.on_brick>=0:
+            boy.x = clamp(main_state.bricks[boy.on_brick].x-90,boy.x,main_state.bricks[boy.on_brick].x+90)
+        boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
         if boy.dir == 1:
@@ -84,6 +88,8 @@ class RunState:
         #boy.frame = (boy.frame + 1) % 8
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.x += boy.velocity * game_framework.frame_time
+        if boy.on_brick>=0:
+            boy.x = clamp(main_state.bricks[boy.on_brick].x-90,boy.x,main_state.bricks[boy.on_brick].x+90)
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
@@ -103,6 +109,10 @@ class SleepState:
 
     def do(boy):
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        if boy.on_brick>=0:
+            boy.x = clamp(main_state.bricks[boy.on_brick].x-90,boy.x,main_state.bricks[boy.on_brick].x+90)
+        boy.x = clamp(25, boy.x, 1600 - 25)
+
 
     def draw(boy):
         if boy.dir == 1:
@@ -132,6 +142,7 @@ class Boy:
         self.velocity = 0
         self.frame = 0
         self.event_que = []
+        self.on_brick = -1
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
@@ -163,6 +174,7 @@ class Boy:
         self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % get_time(), (255, 255, 0))
         draw_rectangle(*self.get_bb())
         debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir) + ' Frame Time:' + str(game_framework.frame_time))
+
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

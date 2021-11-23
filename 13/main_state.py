@@ -43,7 +43,7 @@ def enter():
     game_world.add_object(grass, 0)
 
     global bricks
-    bricks = [Brick(300+300*i, 100+50*i) for i in range(5)]
+    bricks = [Brick(300+300*i, 100+50*i, i) for i in range(5)]
     game_world.add_objects(bricks, 1)
 
 
@@ -80,6 +80,14 @@ def update():
         if collide(ball, boy):
             balls.remove(ball)
             game_world.remove_object(ball)
+
+    for brick in bricks:
+        if collide(brick, boy):
+            boy.on_brick += 1
+            boy.y = brick.y+60
+    
+
+            
 
 
 def draw():

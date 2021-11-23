@@ -4,18 +4,21 @@ from pico2d import *
 
 import game_framework
 import game_world
+import main_state
 
 
 class Brick:
 
-    def __init__(self, center=300, y=100):
+    def __init__(self, center=300, y=100, num=-float('inf')):
         self.image = load_image('brick180x40.png')
         self.left_wall, self.right_wall = center - 100, center + 100
-        self.x, self.y = center, y
+        self.x, self.y, self.num = center, y, num
         self.speed = random.randint(100,250) * random.choice([-1,1])
 
     def update(self):
         self.x += game_framework.frame_time * self.speed
+        if self.num==main_state.boy.on_brick:
+            main_state.boy.x += game_framework.frame_time * self.speed
         if self.x >= self.right_wall:
             self.speed = random.randint(100,250) * random.choice([-1,1])
             self.x = self.right_wall
